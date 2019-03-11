@@ -2,22 +2,29 @@ const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 const topUrl = 'http://35.201.4.158';
 const loginUrl = 'http://35.201.4.158/index.php/login/';
-const email = 'test2@gmail.com';
+const high = 9999999;
+const low  = 1000000;
+const emailId = Math.random()*(high-low)+low;
+const email = emailId+'@gmail.com';
 
-(async function(){
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    
-    // chose device if you need it
-    const iPhone = devices['iPhone X'];
-    await page.emulate(iPhone);
+const schedule = require('node-schedule');
 
-    await topPageHandling(page, topUrl);
-	await moveToCartPage(page, topUrl);	
-	await loginWithEmail(page, loginUrl, email);
+const myJob = schedule.scheduleJob('*/60 * * * * *', (fireDate) => {
+	(async function(){
+	    const browser = await puppeteer.launch();
+	    const page = await browser.newPage();
+	    
+	    // chose device if you need it
+	    const iPhone = devices['iPhone X'];
+	    await page.emulate(iPhone);
 
-    await browser.close();
-})();
+	    await topPageHandling(page, topUrl);
+		await moveToCartPage(page, topUrl);	
+		await loginWithEmail(page, loginUrl, email);
+
+	    await browser.close();
+	})();  
+});
 
 // top page 
 async function topPageHandling(page, topUrl) {
